@@ -1,56 +1,41 @@
 <?php
- session_start();
-  include('database\database.php');
   include('partials\header.php');
   include('partials\sidebar.php');
+  include('database\database.php');
+  
+  //$sql = "SELECT * FROM students";
+  //$result = $conn->query($sql);
   
 
-  $sql = "SELECT * FROM tbstudents WHERE IS ARCHIVED = 0 AND STATUS = 1";
-  // Your PHP BACK CODE HERE
+  $search = "";
+if (isset($_GET['search'])) {
+    $search = $_GET['search'];
+    $sql = "SELECT * FROM students 
+            WHERE firstname LIKE '%$search%' 
+            OR lastname LIKE '%$search%' 
+            OR middlename LIKE '%$search%' 
+            OR suffix LIKE '%$search%' 
+            OR age LIKE '%$search%' 
+            OR program LIKE '%$search%'
+            OR year LIKE '%$search%'";
+} else {
+    $sql = "SELECT * FROM students";
+}
+$result = $conn->query(query: $sql);
 
-  $tbstudents = $conn->query($sql);
-  $status = '';
-  if (isset($_SESSION['status'])) {
-    $status = $_SESSION['status'];
-    unset($_SESSION['status']);
-  }
 ?>
-
-  <main id="main" class="main">
-  <!--ALLLLLEEEEEEERRRRRTT-->
-    <?php if ($status == 'created'): ?>
-      <div class="alert alert-success alert-dismissable fade show" role="alert">
-        Student record Created Successfully.
-        <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <?php elseif ($status == 'updated'): ?>
-      <div class="alert alert-success alert-dismissable fade show" role="alert">
-        Student record Updated Successfully.
-        <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <?php elseif ($status == 'error'): ?>
-      <div class="alert alert-success alert-dismissable fade show" role="alert">
-        An Error Occured.
-        <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <?php if ($status == 'deleted'): ?>
-      <div class="alert alert-success alert-dismissable fade show" role="alert">
-        Employee record Deleted Successfully.
-        <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <?php endif; ?>
-    <!--ALLLLLEEEEEEERRRRRTT ENNNNND-->
-
-
+ <main id="main" class="main">
+  
     <div class="pagetitle">
-      <h1>Employee Information Management System</h1>
-      <nav>
+      <h1>Student Management System
+      </h1>
+      <!-- <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="index.php">Home</a></li>
           <li class="breadcrumb-item">Tables</li>
           <li class="breadcrumb-item active">General</li>
         </ol>
-      </nav>
+      </nav> -->
     </div><!-- End Page Title -->
 
     <section class="section">
@@ -61,21 +46,23 @@
             <div class="card-body">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h5 class="card-title">Default Table</h5>
+                  <h5 class="card-title">Record Table</h5>
                 </div>
                 <div>
-                  <button class="btn btn-primary btn-sm mt-4 mx-3" data-bs-toggle="modal" data-bs-target="#editInfo">
-                    Add Employee
-                  </button>
+                  <button  type="button" class="btn btn-primary btn-sm mt-4 mx-3" data-bs-toggle="modal" data-bs-target="#addStudentModal">Add Record</button>
                 </div>
+
               </div>
 
-              <!-- MUST BE CONNECTED TO THE TABLE IN DATABASE -->
+              <!-- Default Table -->
+ 
               <table class="table">
                 <thead>
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Full Name</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Middle Name</th>
                     <th scope="col">Suffix</th>
                     <th scope="col">Age</th>
                     <th scope="col">Program</th>
@@ -83,228 +70,245 @@
                     <th scope="col" class="text-center">Action</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <?php if ($tbstudents->num_rows > 0): ?>
-                    <?php while ($row = $tbstudents->fetch_assoc())?>
-                      <tr>
-                        <th scope="row"><?php echo= $row['id']; ?></th>
-                        <td><?php echo= $row['firstname']. " ".$row['lastname']. " ".$row['middlename'];?></td>
-                        <td><?php echo= $row['suffix'];?></td>
-                        <td><?php echo= $row['age'];?></td>
-                        <td><?php echo= $row['program'];?></td>
-                        <td><?php echo= $row['year'];?></td>
-                        <td class="d-flex justify-content-center">
-                          <button class="btn btn-success btn-sm mx-1" data-bs-target="#edit">Edit</button>
-                          <button class="btn btn-primary btn-sm mx-1" title="View Employee Information" data-bs-toggle="modal" data-bs-target="#view">View</button>
-                          <button class="btn btn-danger btn-sm mx-1" data-bs-target="#delete">Delete</button>
-                        </td>
-                      </tr>
-                    <?php endwhile; ?>
-                  <?php else; ?>
-                    <tr>
-                      <td colspan="6" class="text-center">No Employees Found</td>
-                    </tr>
-                  <?php endif; ?>
-                </tbody>
-              </table>
-              <!-- End Default Table Example -->
-            </div>
-              <!--page navigation-->
-            <div class="mx-4">
-              <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                  <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                  <li class="page-item"><a class="page-link" href="#">1</a></li>
-                  <li class="page-item"><a class="page-link" href="#">2</a></li>
-                  <li class="page-item"><a class="page-link" href="#">3</a></li>
-                  <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                </ul>
-              </nav>  
-            </div>
-          </div>
-
-        </div>
-
-        
-      </div>
-
-      <!-- ADD EMPLYOEE MODAL -->
-      <div class="modal fade" id="editInfo" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editInfoLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <!-- FORM -->
-          <form action="database/create.php" method="POST">
-            <div class="modal-content">
-              <!--MODAL HEADER-->
-              <div class="modal-header">
-                <h1 class="modal-title fs-5" id="editInfoLabel">Employee Information</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <!--MODAL BODY-->
-              <div class="modal-body">
-                <div class="names mb-4">
-                  <label for="firstname" class="form-label">Name</label>
-                  <input type="text" name="firstname" class="form-control" id="firstname" placeholder="First Name">
-                </div>
-                <div class="names mb-4" >
-                  <label for="lastname" class="form-label">Last Name</label>
-                  <input type="text" name="lastname" class="form-control" id="lastname" placeholder="Last Name">
-                </div>
-                <div class="names mb-4" >
-                  <label for="middlename" class="form-label">Middle Name</label>
-                  <input type="text" name="middlename" class="form-control" id="middlename" placeholder="Middle Name">
-                </div> 
-                <div class="names mb-4" >
-                  <label for="suffix" class="form-label">Suffix</label>
-                  <input type="text" name="suffix" class="form-control" id="suffix" placeholder="Suffix">
-                </div>
-                <div class="names mb-4" >
-                  <label for="age" class="form-label">Age</label>
-                  <input type="number" step="1" min="0" max="150" name="age" class="form-control" id="age" placeholder="Age">
-                </div>
-                <div class="names mb-4" >
-                  <label for="program" class="form-label">Program</label>
-                  <input type="text" name="age" class="form-control" id="program" placeholder="Program">
-                </div>
-                <div class="names mb-4" >
-                  <label for="year" step="1" min="0" max="10" class="form-label">Year</label>
-                  <input type="number" name="year" class="form-control" id="year" placeholder="Year">
-                </div>
-              </div>
-              <!--MODAL FOOTER-->
-              <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
+  <tbody>
+    <?php if ($result->num_rows > 0): ?>
+      <?php while($row = $result->fetch_assoc()): ?>
+        <tr>
+          <td><?= $row['id'] ?></td>
+          <td><?= $row['firstname'] ?></td>
+          <td><?= $row['lastname'] ?></td>
+          <td><?= $row['middlename'] ?></td>
+          <td><?= $row['suffix'] ?></td>
+          <td><?= $row['age'] ?></td>
+          <td><?= $row['program'] ?></td>
+          <td><?= $row['year'] ?></td>
+          <td class="text-center">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#viewStudentModal" 
+                    data-id="<?= $row['id'] ?>"
+                    data-firstname="<?= $row['firstname'] ?>"
+                    data-lastname="<?= $row['lastname'] ?>"
+                    data-middlename="<?= $row['middlename'] ?>"
+                    data-suffix="<?= $row['suffix'] ?>"
+                    data-age="<?= $row['age'] ?>"
+                    data-program="<?= $row['program'] ?>"
+                    data-year="<?= $row['year'] ?>">View</button>
+            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#editStudentModal" 
+                    data-id="<?= $row['id'] ?>"
+                    data-firstname="<?= $row['firstname'] ?>"
+                    data-lastname="<?= $row['lastname'] ?>"
+                    data-middlename="<?= $row['middlename'] ?>"
+                    data-suffix="<?= $row['suffix'] ?>"
+                    data-age="<?= $row['age'] ?>"
+                    data-program="<?= $row['program'] ?>"
+                    data-year="<?= $row['year'] ?>">Edit</button>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteStudentModal" data-id="<?= $row['id'] ?>">Delete</button>
+          </td>
+        </tr>
+      <?php endwhile; ?>
+    <?php else: ?>
+      <tr>
+        <td colspan="8" class="text-center">No record found</td>
+      </tr>
+    <?php endif; ?>
+  </tbody>
+</table>
 
 
 
+    </div>
 
-                    
-        <!--EDIT MOOOOOOOOOOOOOOOOOOOOOODDDDDDDAL-->
-      <div class="modal fade" id="edit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editInfoLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <!-- FORM -->
-          <form action="database/update.php" method="POST">
-            <div class="modal-content">
-              <!--MODAL HEADER-->
-              <div class="modal-header">
-                <h1 class="modal-title fs-5" id="editInfoLabel">Student Information</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <!--MODAL BODY-->
-              <div class="modal-body">
-                <div>
-                  <label for="id" class="form-label">ID</label> 
-                  <input type="text" name="id" class="form-control" id="id" placeholder="id">
-                </div>
-                <div class="names mb-4">
-                  <label for="firstname" class="form-label">Name</label>
-                  <input type="text" name="firstname" class="form-control" id="firstname" placeholder="First Name">
-                </div>
-                <div class="names mb-4" >
-                  <label for="lastname" class="form-label">Last Name</label>
-                  <input type="text" name="lastname" class="form-control" id="lastname" placeholder="Last Name">
-                </div>
-                <div class="names mb-4" >
-                  <label for="middlename" class="form-label">Middle Name</label>
-                  <input type="text" name="middlename" class="form-control" id="middlename" placeholder="Middle Name">
-                </div> 
-                <div class="names mb-4" >
-                  <label for="suffix" class="form-label">Suffix</label>
-                  <input type="text" name="suffix" class="form-control" id="suffix" placeholder="Suffix">
-                </div>
-                <div class="names mb-4" >
-                  <label for="age" class="form-label">Age</label>
-                  <input type="number" step="1" min="0" max="150" name="age" class="form-control" id="age" placeholder="Age">
-                </div>
-                <div class="names mb-4" >
-                  <label for="program" class="form-label">Program</label>
-                  <input type="text" name="age" class="form-control" id="program" placeholder="Program">
-                </div>
-                <div class="names mb-4" >
-                  <label for="year" step="1" min="0" max="10" class="form-label">Year</label>
-                  <input type="number" name="year" class="form-control" id="year" placeholder="Year">
-                </div>
-              </div>
-              <!--MODAL FOOTER-->
-              <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-
-
-                  <!--FOR DELETING MODAL-->
+      <!-- Modal -->
       <div class="modal fade" id="editInfo" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editInfoLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
-              <!--MODAL BODY-->
-            <div class="modal-body">
-              <h1 class="text-danger" style="font-size:50px"><strong>!</strong></h1>
-              <h5>Are you sure you want to delete this student?</h5>
-              <h6>This action cannot be undone.</h6>
-            </div>
-              <!--MODAL FOOTER-->
-            <div class="modal-footer d-flex justify-content-center">
-              <form action="database\delete.php" method="POST">
-                <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Yes, Delete</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-
-         <!--FOR VIEWING MODAL-->
-      <div class="modal fade" id="editInfo" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editInfoLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-              <!--MODAL HEADER-->
             <div class="modal-header">
-              <h1 class="modal-title fs-5" id="editInfoLabel">Student Information</h1>
+              <h1 class="modal-title fs-5" id="editInfoLabel">Employee Information</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-              <!--MODAL BODY-->
             <div class="modal-body">
+              ...
             </div>
-              <!--MODAL FOOTER-->
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
       </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      
-
-      
     </section>
 
   </main><!-- End #main -->
+  <!-- Add Student Modal -->
+<div class="modal fade" id="addStudentModal"  tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addStudentModalLabel">Add New Student</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="database/create.php">
+          <div class="form-group">
+            <label for="firstname">Firstname:</label>
+            <input type="text" class="form-control" id="firstname" name="firstname" required>
+          </div>
+          <div class="form-group">
+            <label for="lastname">Lastname:</label>
+            <input type="text" class="form-control" id="lastname" name="lastname" required>
+          </div>
+          <div class="form-group">
+            <label for="middlename">Middlename:</label>
+            <input type="text" class="form-control" id="middlename" name="middlename" >
+          </div>
+          <div class="form-group">
+            <label for="suffix">Suffix:</label>
+            <input type="text" class="form-control" id="suffix" name="suffix" >
+          </div>
+          <div class="form-group">
+            <label for="age">Age:</label>
+            <input type="number" pattern="[1-9]*" inputmode="numeric" class="form-control" id="age" name="age" required>
+          </div>
+          <div class="form-group">
+            <label for="program">Program:</label>
+            <select class="form-control" id="program" name="program" required>
+              <option value="BSIS">BSIS</option>
+              <option value="BSIT">BSIT</option>
+              <option value="BSCS">BSCS</option>
+              <option value="BTVTED">BTVTED</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="year">Year:</label>
+            <input type="number" pattern="[1-4]*"class="form-control" id="year" name="year" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary col-8 mt-3 my-3 py-2" >Add Student</button><br>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+ <!-- View Student Modal -->
+<div class="modal fade" id="viewStudentModal" tabindex="-1" aria-labelledby="viewStudentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewStudentModalLabel">View Student</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Student Information Fields -->
+        <p><strong>ID:</strong> <span id="view-id"></span></p>
+        <p><strong>First Name:</strong> <span id="view-firstname"></span></p>
+        <p><strong>Last Name:</strong> <span id="view-lastname"></span></p>
+        <p><strong>Middle Name:</strong> <span id="view-middlename"></span></p>
+        <p><strong>Suffix:</strong> <span id="view-suffix"></span></p>
+        <p><strong>Age:</strong> <span id="view-age"></span></p>
+        <p><strong>Program:</strong> <span id="view-program"></span></p>
+        <p><strong>Year:</strong> <span id="view-year"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Edit Student Modal -->
+<div class="modal fade" id="editStudentModal" tabindex="-1" aria-labelledby="editStudentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editStudentModalLabel">Edit Info</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-student-form" method="post" action="database/update.php">
+          <input type="hidden" name="id" id="edit-id">
+
+          <div class="mb-3">
+            <label for="edit-firstname" class="form-label">First Name</label>
+            <input type="text" class="form-control" name="firstname" id="edit-firstname" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="edit-lastname" class="form-label">Last Name</label>
+            <input type="text" class="form-control" name="lastname" id="edit-lastname" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="edit-middlename" class="form-label">Middle Name</label>
+            <input type="text" class="form-control" name="middlename" id="edit-middlename" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="edit-suffix" class="form-label">Suffix</label>
+            <input type="text" class="form-control" name="suffix" id="edit-suffix" >
+          </div>
+
+          <div class="mb-3">
+            <label for="edit-age" class="form-label">Age</label>
+            <input type="text" class="form-control" name="age" id="edit-age" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="edit-program" class="form-label">Program</label>
+            <select class="form-control" id="program" name="program" required>
+              <option value="BSIS">BSIS</option>
+              <option value="BSIT">BSIT</option>
+              <option value="BSCS">BSCS</option>
+              <option value="BTVTED">BTVTED</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="edit-year" class="form-label">Year</label>
+            <input type="text" class="form-control" name="year" id="edit-year" required>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Delete Student Modal -->
+<div class="modal fade" id="deleteStudentModal" tabindex="-1" aria-labelledby="deleteStudentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteStudentModalLabel">Delete Record</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this record?</p>
+      </div>
+      <div class="modal-footer">
+        <form id="delete-student-form" method="post" action="database/delete.php">
+          <input type="hidden" name="id" id="delete-id">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Include Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Include external JS file -->
+<script src="assets/js/modal.js"></script>
+
+
+
 <?php
 include('partials\footer.php');
 ?>
