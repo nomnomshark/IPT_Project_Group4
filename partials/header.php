@@ -5,13 +5,13 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Uniform Records System</title>
+  <title>Student Management System</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="assets/img/logo.png" rel="icon">
-  <link href="assets/img/logo.png" rel="Logo-SorSu-icon">
+  <link href="assets/img/student.png" rel="icon">
+  <link href="assets/img/student.png" rel="Logo-SorSu-i">
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -48,8 +48,8 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="index.php" class="logo d-flex align-items-center">
-        <img src="assets/img/logo.png" alt="SorSU Logo">
-        <span class="d-none d-lg-block">U.R.S</span>
+        <img src="assets/img/student.png" alt="Website Logo">
+        <span class="d-none d-lg-block">Student System</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -77,13 +77,13 @@ $search = isset($search) ? $search : "";
 
         <li class="nav-item dropdown pe-3">
     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-        <img src="assets/img/group9.png" alt="group9" class="rounded-circle">
-        <span class="d-none d-md-block dropdown-toggle ps-2">Group 9</span>
+        <img src="assets/img/student.png" alt="Student Logo" class="rounded-circle">
+        <span class="d-none d-md-block dropdown-toggle ps-2">Group 4</span>
     </a>
     <!-- Dropdown Menu -->
     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
         <li class="dropdown-header">
-            <h6>Group 9</h6>
+            <h6>Group 4</h6>
             <span>BIST 2-5</span>
         </li>
         <li>

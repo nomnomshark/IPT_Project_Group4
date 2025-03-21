@@ -7,7 +7,6 @@
   //$result = $conn->query($sql);
   
 
-  // Your PHP BACK CODE HERE
   $search = "";
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
@@ -84,7 +83,7 @@ $result = $conn->query(query: $sql);
           <td><?= $row['program'] ?></td>
           <td><?= $row['year'] ?></td>
           <td class="text-center">
-            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewStudentModal" 
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#viewStudentModal" 
                     data-id="<?= $row['id'] ?>"
                     data-firstname="<?= $row['firstname'] ?>"
                     data-lastname="<?= $row['lastname'] ?>"
@@ -93,7 +92,7 @@ $result = $conn->query(query: $sql);
                     data-age="<?= $row['age'] ?>"
                     data-program="<?= $row['program'] ?>"
                     data-year="<?= $row['year'] ?>">View</button>
-            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editStudentModal" 
+            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#editStudentModal" 
                     data-id="<?= $row['id'] ?>"
                     data-firstname="<?= $row['firstname'] ?>"
                     data-lastname="<?= $row['lastname'] ?>"
@@ -158,7 +157,7 @@ $result = $conn->query(query: $sql);
           </div>
           <div class="form-group">
             <label for="middlename">Middlename:</label>
-            <input type="text" class="form-control" id="middlename" name="middlename" required>
+            <input type="text" class="form-control" id="middlename" name="middlename" >
           </div>
           <div class="form-group">
             <label for="suffix">Suffix:</label>
@@ -166,11 +165,11 @@ $result = $conn->query(query: $sql);
           </div>
           <div class="form-group">
             <label for="age">Age:</label>
-            <input type="text" class="form-control" id="age" name="age" required>
+            <input type="number" pattern="[1-9]*" inputmode="numeric" class="form-control" id="age" name="age" required>
           </div>
           <div class="form-group">
-            <label for="course">Course:</label>
-            <select class="form-control" id="course" name="course" required>
+            <label for="program">Program:</label>
+            <select class="form-control" id="program" name="program" required>
               <option value="BSIS">BSIS</option>
               <option value="BSIT">BSIT</option>
               <option value="BSCS">BSCS</option>
@@ -179,10 +178,10 @@ $result = $conn->query(query: $sql);
           </div>
           <div class="form-group">
             <label for="year">Year:</label>
-            <input type="text" class="form-control" id="year" name="year" required>
+            <input type="number" pattern="[1-4]*"class="form-control" id="year" name="year" required>
           </div>
 
-          <button type="submit" class="btn btn-primary mt-3">Add Student</button><br>
+          <button type="submit" class="btn btn-primary col-8 mt-3 my-3 py-2" >Add Student</button><br>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </form>
       </div>
@@ -262,6 +261,10 @@ $result = $conn->query(query: $sql);
               <option value="BSCS">BSCS</option>
               <option value="BTVTED">BTVTED</option>
             </select>
+          </div>
+          <div class="mb-3">
+            <label for="edit-year" class="form-label">Year</label>
+            <input type="text" class="form-control" name="year" id="edit-year" required>
           </div>
 
           <div class="modal-footer">
